@@ -20,6 +20,7 @@ async function initDb() {
     expr: `id > "0"`,
     output_fields: ["id"],
   });
+  console.log('records', records.length, 'records')
   if (!records.data.length) {
     const createRes = await collectionManager.createCollection({
       collection_name: collectionName,
@@ -69,7 +70,6 @@ async function initDb() {
     });
     const data = fs.readFileSync('./data.json', 'utf8');
     const jsondata = JSON.parse(data);
-    console.log(jsondata, 'data')
     const vectorsData = jsondata.data.map((data, id) => ({ vector: data.vector, title: data.title, link: data.link, id, imglink: data.imglink }));
     const params = {
       collection_name: collectionName,
@@ -144,6 +144,19 @@ initDb()
         res.send({ error: 'error' });
       }
     });
+    app.get('/api/articles', async (req, res, next) => {
+      try {
+        const records = await milvusClient.dataManager.query({
+          collection_name: collectionName,
+          expr: `id > "0"`,
+          output_fields: ["id"],
+        });
+        res.send(records);
+      } catch (error) {
+        console.log(error);
+        res.send({ error: 'error' });
+      }
+    })
     app.listen(3000, () => {
       console.log('app is running');
     });

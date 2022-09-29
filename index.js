@@ -149,7 +149,7 @@ initDb()
         const records = await milvusClient.dataManager.query({
           collection_name: collectionName,
           expr: `id > "0"`,
-          output_fields: ["id"],
+          output_fields: ['id', 'title', 'link', 'imglink'],
         });
         res.send(records);
       } catch (error) {

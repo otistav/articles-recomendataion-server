@@ -153,6 +153,8 @@ initDb()
     app.get('/api/articles/similar', async (req, res, next) => {
       try {
         let article = await getByLink(req.query.link);
+        const articles = await getSimilar(article.id);
+        res.send(articles);
         return res.send(article);
       } catch (error) {
         console.log(error);

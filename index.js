@@ -168,19 +168,24 @@ initDb()
         res.send({ error: 'error' });
       }
     });
-
     app.get('/api/articles', async (req, res, next) => {
       try {
-        if (req.query.link) {
-          let article = await getByLink(req.query.link);
-          return res.send(article);
-        }
+
         const records = await milvusClient.dataManager.query({
           collection_name: collectionName,
           expr: `id > "0"`,
           output_fields: ['id', 'title', 'link', 'imglink'],
         });
         res.send(records);
+      } catch (error) {
+        console.log(error);
+        res.send({ error: 'error' });
+      }
+    })
+    app.get('/api/articles/similar', async (req, res, next) => {
+      try {
+        let article = await getByLink(req.query.link);
+        return res.send(article);
       } catch (error) {
         console.log(error);
         res.send({ error: 'error' });

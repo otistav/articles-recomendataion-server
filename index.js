@@ -172,7 +172,7 @@ initDb()
     app.get('/api/articles', async (req, res, next) => {
       try {
         if (req.query.link) {
-          let article = await getByLink(req.params.id);
+          let article = await getByLink(req.query.link);
           return res.send(article);
         }
         const records = await milvusClient.dataManager.query({

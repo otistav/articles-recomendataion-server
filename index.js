@@ -106,6 +106,16 @@ async function getById(record_id) {
 
 }
 
+async function getByTitle(title) {
+  const vector = await milvusClient.dataManager.query({
+    collection_name: collectionName,
+    expr: `title == "${title}"`,
+    output_fields: ['id', 'title', 'imglink', 'vector', 'link'],
+  });
+  return vector.data.length ? vector.data[0] : {};
+
+}
+
 async function getSimilar(record_id, records_num = 10) {
   const vector = await getById(record_id);
   const result = await milvusClient.dataManager.search({
@@ -142,7 +152,13 @@ initDb()
     })
     app.get('/api/articles/:id', async (req, res, next) => {
       try {
-        const article = await getById(req.params.id);
+        let article;
+        if (req.query.by === 'title') {
+          article = await getById(req.params.id);
+        }
+        else {
+          article = await getById(req.params.id);
+        }
         res.send(article);
       } catch (error) {
         console.log(error);

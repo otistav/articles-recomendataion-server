@@ -3,12 +3,14 @@ const fs = require('fs');
 const { MilvusClient } = require('@zilliz/milvus2-sdk-node');
 const { DataType } = require('@zilliz/milvus2-sdk-node/dist/milvus/types/Common');
 const bodyParser = require('body-parser');
+const cors = require('cors')
 const milvusClient = new MilvusClient('localhost:19530');
 const collectionManager = milvusClient.collectionManager;
 const collectionName = 'test';
 
 const app = express();
 app.use(bodyParser.json());
+app.use(cors());
 
 async function initDb() {
   const checkVersion = await milvusClient.checkVersion();

@@ -11,6 +11,12 @@ const collectionName = 'test';
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Headers', 'origin, content-type, accept');
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, HEAD, OPTIONS, PUT, DELETE, PATCH");
+  next();
+});
 
 async function initDb() {
   const checkVersion = await milvusClient.checkVersion();

@@ -152,13 +152,7 @@ initDb()
     })
     app.get('/api/articles/:id', async (req, res, next) => {
       try {
-        let article;
-        if (req.query.by === 'link') {
-          article = await getByLink(req.params.id);
-        }
-        else {
-          article = await getById(req.params.id);
-        }
+        let article = await getById(req.params.id);
         res.send(article);
       } catch (error) {
         console.log(error);
@@ -177,6 +171,10 @@ initDb()
 
     app.get('/api/articles', async (req, res, next) => {
       try {
+        if (req.query.by === 'link') {
+          let article = await getByLink(req.params.id);
+          return res.send(article);
+        }
         const records = await milvusClient.dataManager.query({
           collection_name: collectionName,
           expr: `id > "0"`,

@@ -171,7 +171,7 @@ initDb()
 
     app.get('/api/articles', async (req, res, next) => {
       try {
-        if (req.query.by === 'link') {
+        if (req.query.link) {
           let article = await getByLink(req.params.id);
           return res.send(article);
         }

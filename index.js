@@ -150,6 +150,15 @@ initDb()
         res.send({ error: 'error' });
       }
     })
+    app.get('/api/articles/similar', async (req, res, next) => {
+      try {
+        let article = await getByLink(req.query.link);
+        return res.send(article);
+      } catch (error) {
+        console.log(error);
+        res.send({ error: 'error' });
+      }
+    })
     app.get('/api/articles/:id', async (req, res, next) => {
       try {
         let article = await getById(req.params.id);
@@ -182,15 +191,7 @@ initDb()
         res.send({ error: 'error' });
       }
     })
-    app.get('/api/articles/similar', async (req, res, next) => {
-      try {
-        let article = await getByLink(req.query.link);
-        return res.send(article);
-      } catch (error) {
-        console.log(error);
-        res.send({ error: 'error' });
-      }
-    })
+
     app.listen(3000, () => {
       console.log('app is running');
     });

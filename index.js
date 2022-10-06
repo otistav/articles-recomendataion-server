@@ -106,10 +106,10 @@ async function getById(record_id) {
 
 }
 
-async function getByTitle(title) {
+async function getByLink(link) {
   const vector = await milvusClient.dataManager.query({
     collection_name: collectionName,
-    expr: `title == "${title}"`,
+    expr: `link == "${link}"`,
     output_fields: ['id', 'title', 'imglink', 'vector', 'link'],
   });
   return vector.data.length ? vector.data[0] : {};
@@ -153,8 +153,8 @@ initDb()
     app.get('/api/articles/:id', async (req, res, next) => {
       try {
         let article;
-        if (req.query.by === 'title') {
-          article = await getById(req.params.id);
+        if (req.query.by === 'link') {
+          article = await getByLink(req.params.id);
         }
         else {
           article = await getById(req.params.id);

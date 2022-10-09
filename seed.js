@@ -32,6 +32,7 @@ async function initDb() {
   if (!records.data.length) {
     const createRes = await collectionManager.createCollection({
       collection_name: collectionName,
+      //"Date", "Title", "Img", "Content", "Url", "Source", "FullVector", "TitleVector"
       fields: [
         {
           name: 'id',
@@ -41,6 +42,14 @@ async function initDb() {
             max_length: '100',
           },
           description: '',
+        },
+        {
+          name: 'date',
+          data_type: DataType.VarChar,
+          description: '',
+          type_params: {
+            max_length: '300',
+          },
         },
         {
           name: 'link',
@@ -72,6 +81,22 @@ async function initDb() {
           description: '',
           type_params: {
             dim,
+          },
+        },
+        {
+          name: 'title_vector',
+          data_type: DataType.FloatVector,
+          description: '',
+          type_params: {
+            dim,
+          },
+        },
+        {
+          name: 'flat_vector',
+          data_type: DataType.FloatVector,
+          description: '',
+          type_params: {
+            dim: '2',
           },
         },
       ],
@@ -141,67 +166,3 @@ async function getSimilar(record_id, records_num = 10) {
   });
   return result.results;
 }
-
-initDb()
-  .then(() => {
-    app.get('/api/articles/random', async (req, res, next) => {
-      try {
-        const randomIds = Array.from({ length: 10 }, () => Math.floor(Math.random() * 461).toString());
-        const records = await milvusClient.dataManager.query({
-          collection_name: collectionName,
-          expr: `id in ${JSON.stringify(randomIds)}`,
-          output_fields: ['id', 'title', 'link', 'imglink'],
-        });
-        res.send(records);
-      } catch (error) {
-        console.log(error);
-        res.send({ error: 'error' });
-      }
-    })
-    app.get('/api/articles/similar', async (req, res, next) => {
-      try {
-        let article = await getByLink(req.query.link);
-        const articles = await getSimilar(article.id);
-        return res.send(articles);
-      } catch (error) {
-        console.log(error);
-        res.send({ error: 'error' });
-      }
-    })
-    app.get('/api/articles/:id', async (req, res, next) => {
-      try {
-        let article = await getById(req.params.id);
-        res.send(article);
-      } catch (error) {
-        console.log(error);
-        res.send({ error: 'error' });
-      }
-    });
-    app.get('/api/articles/:id/similar', async (req, res, next) => {
-      try {
-        const article = await getSimilar(req.params.id);
-        res.send(article);
-      } catch (error) {
-        console.log(error);
-        res.send({ error: 'error' });
-      }
-    });
-    app.get('/api/articles', async (req, res, next) => {
-      try {
-
-        const records = await milvusClient.dataManager.query({
-          collection_name: collectionName,
-          expr: `id > "0"`,
-          output_fields: ['id', 'title', 'link', 'imglink'],
-        });
-        res.send(records);
-      } catch (error) {
-        console.log(error);
-        res.send({ error: 'error' });
-      }
-    })
-
-    app.listen(3000, () => {
-      console.log('app is running');
-    });
-  })
